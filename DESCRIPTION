@@ -1,4 +1,4 @@
-Package: riverSmooth
+Package: rc
 Title: Helper for Fitting GMRF Models on River Networks in MGCV
 Version: 0.0.1
 Authors@R:  person(c("Colin", "P."), "Millar", role = c("aut", "cre"), 
