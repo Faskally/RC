@@ -11,5 +11,5 @@ Depends:
      gmrf (>= 0.0.1) 
 Suggests:
     knitr (>= 1.8)
-License: file LICENSE
+License: MIT + file LICENSE
 LazyData: true
