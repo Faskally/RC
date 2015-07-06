@@ -4,5 +4,6 @@
 #' @name rc
 #' @import mgcv
 #' @import gmrf
+#' @import igraph
 #'
 NULL
