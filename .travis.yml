@@ -7,6 +7,11 @@ sudo: required
 # Be strict when checking our package
 warnings_are_errors: true
 
+# but don't run cran checks just yet
+r_check_args: 
+#r_check_args: --as-cran
+
+
 # System dependencies for HTTP calling
 #apt_packages:
 # - libcurl4-openssl-dev
