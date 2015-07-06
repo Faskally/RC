@@ -65,7 +65,7 @@ xtr <- list(penalty = Q, rank = nrow(Q) - 1)
 # plot simulation
 breaks <- seq(min(y)-0.001, max(y)+0.001, length = 11)
 par(mfrow = c(1,2))
-plotgraph(g, col = heat.colors(length(breaks)-1)[as.numeric(cut(y, breaks))])
+plot(g, vertex.color = heat.colors(length(breaks)-1)[as.numeric(cut(y, breaks))])
 
 # fit a model
 # use REML this time
@@ -101,6 +101,12 @@ plot(esk)
 
 # great a graph of the full river
 g <- buildTopo(esk)
+
+# test smfs report code ?
+# g <- buildTopo(esk)
+# g <- reduceNetwork(g)
+# Qrc <- getWRW1Mat(g)
+# getRCLocation(xy, g) # this should return a vector of node IDs
 
 # plot graph
 plot(g)
