@@ -10,6 +10,7 @@ pkg <- devtools::as.package("C:/work/repos/Faskally/rc")
 devtools::load_all(pkg)
 
 example(smooth.construct.gmrf.smooth.spec)
+#example(getQgraph)
 
 # -----------------------------------------------
 #
@@ -73,7 +74,7 @@ g1 <- gam(y ~ s(nid, bs = "gmrf", xt = xtr), method="REML", data = dat)
 summary(g1)
 
 # plot fitted values
-plotgraph(g, col = heat.colors(length(breaks)-1)[as.numeric(cut(fitted(g1), breaks))])
+plot(g, vertex.color = heat.colors(length(breaks)-1)[as.numeric(cut(fitted(g1), breaks))])
 
 
 
@@ -89,6 +90,7 @@ pkg <- devtools::as.package("C:/work/repos/Faskally/rc")
 devtools::load_all(pkg)
 library(magrittr)
 library(sp)
+library(raster)
 
 # -------------------------------------
 # get data
@@ -102,6 +104,8 @@ plot(esk)
 # great a graph of the full river
 g <- buildTopo(esk)
 
+# here we need to add sample points to the network
+
 # test smfs report code ?
 # g <- buildTopo(esk)
 # g <- reduceNetwork(g)
@@ -111,6 +115,85 @@ g <- buildTopo(esk)
 # plot graph
 plot(g)
 
+# convert to a spatial points data.frame
+xy <- cbind(x = V(g)$x, y = V(g)$y)
+rownames(xy) <- 1:nrow(xy)
+xy <- SpatialPoints(xy)
+proj4string(xy) <- proj4string(esk)
+
+# get data for each point?
+# --------------------------------------------
+
+load("C:/work/repos/Faskally/rc/devel/dtm.rData")
+load("C:/work/repos/Faskally/rc/devel/acc.rData")
+
+df <- data.frame(id = 1:vcount(g), row.names = 1:vcount(g))
+# Altitude
+df $ alt <- extract(dtm, xy)
+
+# Upstream catchment
+df $ uca <- extract(acc, xy)
+
+# Gradient
+grad <- terrain(dtm, opt = "slope", unit = "degrees", neighbours = 8)
+df $ grad <- extract(grad, xy)
+
+# can remove rasters now
+rm(dtm, acc, grad)
+
+# load master map data
+
+load("C:/work/repos/Faskally/rc/devel/areas.rData")
+
+# get buffers
+rbuff <- rgeos::gBuffer(esk, width = 25)
+rareas <- raster::crop(areas, rbuff)
+
+save(rareas, file = "C:/work/repos/Faskally/rc/devel/rareas.rData")
+
+
+# get buffers
+buff <- rgeos::gBuffer(xy, byid = TRUE, width = 25)
+
+# crop MM data to buffers
+rareas <- raster::crop(areas, buff[1,])
+rbuff @ data
+plot(rbuff)
+plot(rbuff[rbuff $ Theme == "Water",], col = "lightblue", add = TRUE, border = "lightblue")
+
+water <- rbuff[rbuff $ Theme == "Water",]
+
+# water area
+gArea(water)
+
+# width
+0.25 * (gLength(water) - sqrt(gLength(water)^2 - 16 * gArea(water)))
+
+# total land use
+gArea(buff) - gArea(water)
+
+# Altitude
+extract(rdtm, efp)
+
+# Gradient
+extract(rgrad, efp)
+
+# Upstream catcment
+extract(racc, efp) 
+# this is on the boudary and hits a zero square
+vals <- extract(racc, buff)[[1]]
+mean(vals[vals > 0]) * 0.0025
+
+
+
+
+
+nodes <- SpatialPointsDataFrame(xy, data.frame())
+
+
+# plot river
+plot(esk)
+plot(nodes, add = TRUE, cex = 1, pch = 16)
 
 # -------------------------------------
 # get GMRF
