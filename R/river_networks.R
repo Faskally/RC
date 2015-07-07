@@ -68,9 +68,9 @@ buildTopo <- function(lines, from = "FNODE_", to = "TNODE_") {
   # construct graph
   graph <- graph.edgelist(cbind(from.new, to.new), directed = FALSE)
 
-  # add in locations to vertices
-  V(graph)$x = as.numeric(substring(vnames, 1, 7))
-  V(graph)$y = as.numeric(substring(vnames, 8, 14))
+  # add in locations to vertices - node ID built from round(xy locations * 10)
+  V(graph)$x = as.numeric(substring(vnames, 1, 7))/10
+  V(graph)$y = as.numeric(substring(vnames, 8, 14))/10
 
   # add length to edges ?
   E(graph)$length <- lines $ LENGTH
